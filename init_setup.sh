@@ -22,8 +22,6 @@ echo ${local_ip}
 #
 #TODO: 
 #   Set new static IP
-let nic
-
 nic=$(ip -br link | grep -v LOOPBACK | awk '{ print $1 }')
 network_config_file="00-installer-config.yaml"
 
@@ -32,6 +30,9 @@ $(cp ${network_config_file} /etc/netplan/${network_config_file})
 $(sed -i "s/<nic>/${nic}/g" /etc/netplan/${network_config_file})
 $(sed -i "s/<local_ip>/${local_ip}/g" /etc/netplan/${network_config_file})
 $(netplan apply)
-echo ${nic}
 
+echo "-----###-----###-----###-----###-----###-----###-----###"
+echo "Static IP configured. --> Check /etc/netplan/${network_config_file}"
+$(ip a)
+echo "-----###-----###-----###-----###-----###-----###-----###"
 #echo ${mac}
