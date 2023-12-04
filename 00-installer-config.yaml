@@ -1,0 +1,15 @@
+network:
+  ethernets:
+    <nic>:
+      addresses:
+      - <local_ip>/24
+      nameservers:
+        addresses:
+        - 143.107.253.5
+        - 8.8.8.8
+        search:
+        - vlan225.poli.usp.br
+      routes:
+      - to: default
+        via: 10.10.225.1
+  version: 2
