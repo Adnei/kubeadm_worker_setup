@@ -22,14 +22,16 @@ echo "- - - - - Starting Time Sync (NTP) - - - - -"
 
 # TODO:
 #   Static timezone. Worth it to parametrize?
-timedatectl set-timezone America/Sao_Paulo 
+timedatectl set-timezone America/Sao_Paulo
+cp timesyncd.conf /etc/systemd/.
 # FIXME:
-#   'set-ntp true' might not worker
+#   'set-ntp true' might not work
 #   We have to ensure 'set-ntp true' before testing server sync
 timedatectl set-ntp true
+systemctl restart systemd-timesyncd.service
 echo "Wait until server sync"
 is_sync="no"
-set_timeout=25
+set_timeout=100
 count=0
 
 until [[ "$is_sync" == "yes" ]]; do
