@@ -72,3 +72,8 @@ if [[ ! -z "$1" && "$1" != 0 ]]; then
   #echo ${mac}
 
 fi
+
+# FIXME:
+#   Parametrize worker setup run.
+sudo chmod 777 worker_setup.sh
+sudo ./worker_setup.sh
