@@ -73,6 +73,7 @@ if [[ ! -z "$1" && "$1" != 0 ]]; then
 
 fi
 
+sudo apt update
 # FIXME:
 #   Parametrize worker setup run.
 sudo chmod 777 worker_setup.sh
