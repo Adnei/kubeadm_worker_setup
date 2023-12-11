@@ -11,6 +11,7 @@
 #
 #   set-static-ip: changes current IP (received from dhcp, prob) to a static parameterized ip
 #
+# worker or controller setup.sh receives 'kubeadm token create --print-join-command --ttl=0' as argument
 
 # FIXME
 #   remove static ip configuration from init_setup.sh
