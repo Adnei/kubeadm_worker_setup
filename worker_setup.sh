@@ -8,6 +8,20 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 echo "Worker node setup starting..."
 
+if ! [ $(id -u) = 0 ]; then
+   echo -e "Run it as root.\nExiting"
+   exit 1
+fi
+
+
+if [ -z "$1" ]
+  then
+    echo "No argument supplied."
+    echo -e "Cluster join command required as argument.\nExiting"
+    exit 1
+fi
+
+cluster_join_command=$1
 
 # FIXME:
 #   We should be careful with any repeated MAC address and PRODUCT_UUID in the cluster.
@@ -96,3 +110,51 @@ echo -e "\n\n"
 # TODO:
 #   cgroup drivers
 #   https://kubernetes.io/docs/setup/production-environment/container-runtimes/#cgroup-drivers
+#
+# TODO/FIXME:
+#   cgroupfs is not supported up to now!!!
+#   We consider systemd as the init system
+#   This script should verify the init system and apply the suitable cgroup driver
+#
+
+echo -e "Installing and configuring Containerd\n"
+echo -e "Proceeding with Containerd v1.7.11. Please, check https://github.com/containerd/containerd/releases for other releases\n"
+
+wget https://github.com/containerd/containerd/releases/download/v1.7.11/containerd-1.7.11-linux-amd64.tar.gz
+tar Cxvf /usr/local containerd-1.7.11-linux-amd64.tar.gz
+
+# FIXME
+#   systemd only!!
+#   Should parameterize versions
+#   Maybe select the latest version as default instead of static versions
+
+wget -O /usr/local/lib/systemd/system/containerd.service https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+systemctl daemon-reload
+systemctl enable --now containerd
+
+echo -e "Installing runc. Proceeding with version v1.1.10. Please, check https://github.com/opencontainers/runc/releases for other releases\n"
+wget https://github.com/opencontainers/runc/releases/download/v1.1.10/runc.amd64
+install -m 755 runc.amd64 /usr/local/sbin/runc
+
+echo -e "Installing CNI plugins. Proceeding with CNI Plugins v1.4.0. Please, check https://github.com/containernetworking/plugins/releases for other releases\n"
+wget https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz
+mkdir -p /opt/cni/bin
+tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.4.0.tgz
+
+echo -e "Setting cgroup drive to systemd\n"
+containerd config default | sudo tee /etc/containerd/config.toml
+sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
+sudo systemctl restart containerd
+
+echo -e "Installing kubeadm, kubelet and kubectl. Defaults to v1.28\n"
+apt update
+mkdir -m 755 /etc/apt/keyrings
+apt install -y apt-transport-https ca-certificates curl gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+apt update
+apt install -y kubelet kubeadm kubectl
+apt-mark hold kubelet kubeadm kubectl
+
+echo -e "Joining cluster...\n"
+$(cluster_join_command)
