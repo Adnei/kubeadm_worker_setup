@@ -6,15 +6,17 @@
 #    - init_setup.sh --> takes care of basic steps for configuring the new worker node (locale + network setup)
 #    - worker_setup.sh --> kubernetes configuration for the new worker node. It includes eventual firewal settings.
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
 
 if ! [ $(id -u) = 0 ]; then
    echo "Run it as root"
-   #exit 1
+   exit 1
 fi
 
 
-echo "We got $# params"
-echo ${local_ip}
+echo -e "${GREEN}Starting full setup configuration${NC}\n"
 
 #TODO:
 #   Time Sync (NTP)
@@ -54,7 +56,6 @@ echo "- - - - - Time Sync (NTP) Finished - - - - -"
 #   Set new static IP
 
 if [[ ! -z "$1" && "$1" != 0 ]]; then 
-
   local_ip=$1
   nic=$(ip -br link | grep -v LOOPBACK | awk '{ print $1 }')
   network_config_file="00-installer-config.yaml"
@@ -70,11 +71,14 @@ if [[ ! -z "$1" && "$1" != 0 ]]; then
   ip a
   echo "-----###-----###-----###-----###-----###-----###-----###"
   #echo ${mac}
-
+else
+  echo -e "${GREEN}Skipping static ip configuration${NC}\n"
 fi
 
-sudo apt update
-# FIXME:
-#   Parametrize worker setup run.
-sudo chmod 777 worker_setup.sh
-sudo ./worker_setup.sh
+
+echo -e "${GREEN}- - - - - init setup DONE - - - - -${NC}\n"
+#sudo apt update
+## FIXME:
+##   Parametrize worker setup run.
+#sudo chmod 777 worker_setup.sh
+#sudo ./worker_setup.sh
