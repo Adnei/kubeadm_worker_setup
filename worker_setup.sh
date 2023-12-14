@@ -123,7 +123,7 @@ echo -e "\n\n"
 #   This script should verify the init system and apply the suitable cgroup driver
 #
 
-echo -e "Installing and configuring Containerd\n"
+echo -e "${GREEN}Installing and configuring Containerd\n${NC}"
 echo -e "Proceeding with Containerd v1.7.11. Please, check https://github.com/containerd/containerd/releases for other releases\n"
 
 wget https://github.com/containerd/containerd/releases/download/v1.7.11/containerd-1.7.11-linux-amd64.tar.gz
@@ -137,6 +137,8 @@ sudo tar Cxvf /usr/local containerd-1.7.11-linux-amd64.tar.gz
 wget -O /usr/local/lib/systemd/system/containerd.service https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now containerd
+
+echo -e "${GREEN}Containerd installed${NC}\n"
 
 echo -e "Installing runc. Proceeding with version v1.1.10. Please, check https://github.com/opencontainers/runc/releases for other releases\n"
 wget https://github.com/opencontainers/runc/releases/download/v1.1.10/runc.amd64
