@@ -62,6 +62,8 @@ while getopts ":hd:ai:w" option; do
       dst_host=$OPTARG
       dst_validate "$dst_host"
       if ssh $dst_host "[ -d ~/'${current_dir}' ]"; then
+        echo -e "WARNING: Project already exists inside remote host '${dst_host}'..."
+        echo -e "Updating project on remote host '${dst_host}'"
         ssh $dst_host "rm -rf ~/'${current_dir}'"
       fi
       ssh $dst_host "git clone https://github.com/Adnei/kubeadm_worker_setup.git"
@@ -107,7 +109,7 @@ while getopts ":hd:ai:w" option; do
       else
         cluster_join_command=$(kubeadm token create --print-join-command --ttl=0)
       fi
-      echo "this is the command: $cluster_join_command"
+      echo -e "${GREEN}Using join command:\n ${cluster_join_command}${NC}\n"
 
       # TODO
       #  SSH first, then run script
