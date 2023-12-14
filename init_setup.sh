@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Hello, World!
+#   init_setup is a simple script for configuring time sync (via timedatectl) and setting static ip configurations
+
 # TODO:
 # First version
 # - Maybe spliting fuctionalitis into different files, e.g:
@@ -11,7 +14,7 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 if ! [ $(id -u) = 0 ]; then
-   echo "Run it as root"
+   echo -e "${RED}Error: This script needs root privileges. Run it as root/sudo${NC}"
    exit 1
 fi
 

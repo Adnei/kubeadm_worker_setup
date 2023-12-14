@@ -1,7 +1,13 @@
 #!/bin/bash
-#
+
+# Hello, World!
+#   worker_setup is a script for preparing nodes to join a kubernetes cluster as working nodes.
+#   It turns off swap, updates firewall rules, etc... all that of stuff required for a worker node.
+#   It requires a cluster join command, which can be obtained through "kubeadm token create --print-join-command --ttl=0'" command in your controller
+
 # TODO: Initial version
 #   Prepares a worker node to join the cluster
+#   Create a controller_setup, derivating from worker_setup
 #
 RED='\033[0;31m'
 GREEN='\033[0;32m'
