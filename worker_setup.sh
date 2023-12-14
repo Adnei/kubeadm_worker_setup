@@ -163,4 +163,4 @@ apt install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
 
 echo -e "Joining cluster...\n"
-$(cluster_join_command)
+eval $cluster_join_command
