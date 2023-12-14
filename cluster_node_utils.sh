@@ -70,9 +70,19 @@ while getopts ":hd:ai:w" option; do
       ;;
     i) # init setup proccess. $OPTARG == 0 means no static ip configuration
       static_ip=$OPTARG
+      if [ -z "${dst_host}" ]; then
+        echo -e "ERROR: arg -d is required for authentication.\n"
+        echo -e "Set arg -d <user>@<host_ip> as the first argument"
+        exit 1
+      fi
+
       # FIXME
       #   init_setup.sh does NOT verify if ${static_ip} is a valid IP...
-      sudo ./init_setup.sh ${static_ip}
+
+      # TODO
+      #  SSH first, then run script
+      #sudo ./init_setup.sh ${static_ip}
+      ssh ${dst_host} "$(< init_setup ${static_ip})"
       ;;
     w) # worker node add
       if [ -z "${dst_host}" ]; then
@@ -91,7 +101,11 @@ while getopts ":hd:ai:w" option; do
         cluster_join_command=$(kubeadm token create --print-join-command --ttl=0)
       fi
       echo "this is the command: $cluster_join_command"
-      #sudo ./worker_setup.sh $cluster_join_command
+
+      # TODO
+      #  SSH first, then run script
+      # sudo ./worker_setup.sh $cluster_join_command
+      ssh ${dst_host} "$(< init_setup ${static_ip})"
       ;;
     \?) # invalid opt
       echo "Error: Invalid option"
