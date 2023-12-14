@@ -25,7 +25,6 @@ help_fn() {
 }
 
 auth_fn(){
-
   # access param with $1 $2...
   ssh_dst=$1
   key_file=~/.ssh/id_rsa
@@ -34,28 +33,31 @@ auth_fn(){
   fi
   ssh-copy-id $ssh_dst
 
+  echo "Hello destination host: $ssh_dst"
 }
 
 dst_host=""
-while getopts ":h:d:a:f" option; do
+while getopts ":hd:af" option; do
   case $option in
     h) # help message
       help_fn
       exit;;
     d) #destination --> <user>@<ip> format
       dst_host=$OPTARG
+      ;;
     a) # authentication
       # TODO:
       #   Needs to read <username>@<ip_address>
       #     <username> should be root
       #   Must validate this input
-      if [["${dst_host}" == ""]] then
+      if [ -z "${dst_host}" ]; then
         echo -e "ERROR: arg -d is necessary for authentication.\n"
         echo -e "Set arg -d <user>@<host_ip>"
         exit 1
       fi
       auth_fn "$dst_host"
       # ssh-copy-id $OPTARG
+      ;;
     f) # full setup proccess. $OPTARG == 0 means no static ip configuration
       static_ip=$OPTARG
       sudo ./init_setup.sh ${static_ip}
