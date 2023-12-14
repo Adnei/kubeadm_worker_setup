@@ -133,7 +133,7 @@ sudo tar Cxvf /usr/local containerd-1.7.11-linux-amd64.tar.gz
 #   systemd only!!
 #   Should parameterize versions
 #   Maybe select the latest version as default instead of static versions
-
+mkdir -p /usr/local/lib/systemd/system
 wget -O /usr/local/lib/systemd/system/containerd.service https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now containerd
