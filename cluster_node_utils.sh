@@ -82,7 +82,8 @@ while getopts ":hd:ai:w" option; do
       # TODO
       #  SSH first, then run script
       #sudo ./init_setup.sh ${static_ip}
-      ssh ${dst_host} "$(< init_setup ${static_ip})"
+      chmod 755 init_setup.sh
+      ssh ${dst_host} "$(< init_setup.sh ${static_ip})"
       ;;
     w) # worker node add
       if [ -z "${dst_host}" ]; then
@@ -105,7 +106,8 @@ while getopts ":hd:ai:w" option; do
       # TODO
       #  SSH first, then run script
       # sudo ./worker_setup.sh $cluster_join_command
-      ssh ${dst_host} "$(< init_setup ${static_ip})"
+      chmod 755 worker_setup.sh
+      ssh ${dst_host} "$(< worker_setup.sh ${cluster_join_command})"
       ;;
     \?) # invalid opt
       echo "Error: Invalid option"
