@@ -51,6 +51,8 @@ auth_fn(){
 }
 
 dst_host=""
+current_dir=$(basename "`pwd`")
+
 while getopts ":hd:ai:w" option; do
   case $option in
     h) # help message
@@ -59,6 +61,11 @@ while getopts ":hd:ai:w" option; do
     d) #destination: <user>@<ip or host alias> format
       dst_host=$OPTARG
       dst_validate "$dst_host"
+      if ssh $dst_host "[ -d ~/'${current_dir}' ]"; then
+        ssh $dst_host "rm -rf ~/'${current_dir}'"
+      fi
+      ssh $dst_host "git clone https://github.com/Adnei/kubeadm_worker_setup.git"
+      ssh $dst_host "chmod 755 ~/'${current_dir}'/*.sh"
       ;;
     a) # authentication: does NOT require $OPTARG
       if [ -z "${dst_host}" ]; then
@@ -82,8 +89,7 @@ while getopts ":hd:ai:w" option; do
       # TODO
       #  SSH first, then run script
       #sudo ./init_setup.sh ${static_ip}
-      chmod 755 init_setup.sh
-      ssh ${dst_host} "$(< init_setup.sh ${static_ip})"
+      ssh -t ${dst_host} "sudo ~/'${current_dir}'/init_setup.sh '${static_ip}'"
       ;;
     w) # worker node add
       if [ -z "${dst_host}" ]; then
@@ -106,8 +112,7 @@ while getopts ":hd:ai:w" option; do
       # TODO
       #  SSH first, then run script
       # sudo ./worker_setup.sh $cluster_join_command
-      chmod 755 worker_setup.sh
-      ssh ${dst_host} "$(< worker_setup.sh ${cluster_join_command})"
+      ssh -t ${dst_host} "sudo ~/'${current_dir}'/worker_setup.sh '${cluster_join_command}'"
       ;;
     \?) # invalid opt
       echo "Error: Invalid option"
