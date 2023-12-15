@@ -133,7 +133,7 @@ sudo tar Cxvf /usr/local containerd-1.7.11-linux-amd64.tar.gz
 #   systemd only!!
 #   Should parameterize versions
 #   Maybe select the latest version as default instead of static versions
-mkdir -p /usr/local/lib/systemd/system
+sudo mkdir -p /usr/local/lib/systemd/system
 wget -O /usr/local/lib/systemd/system/containerd.service https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now containerd
@@ -146,10 +146,11 @@ sudo install -m 755 runc.amd64 /usr/local/sbin/runc
 
 echo -e "Installing CNI plugins. Proceeding with CNI Plugins v1.4.0. Please, check https://github.com/containernetworking/plugins/releases for other releases\n"
 wget https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz
-mkdir -p /opt/cni/bin
+sudo mkdir -p /opt/cni/bin
 sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.4.0.tgz
 
 echo -e "Setting cgroup drive to systemd\n"
+sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml
 sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
 sudo systemctl restart containerd
