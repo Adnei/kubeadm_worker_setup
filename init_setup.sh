@@ -28,7 +28,9 @@ echo "- - - - - Starting Time Sync (NTP) - - - - -"
 # TODO:
 #   Static timezone. Worth it to parametrize?
 timedatectl set-timezone America/Sao_Paulo
-cp timesyncd.conf /etc/systemd/.
+# FIXME
+#   Needs to ensure fullpath to scripts dir
+cp ~/kube_adm_worker_setup/timesyncd.conf /etc/systemd/.
 # FIXME:
 #   'set-ntp true' might not work
 #   We have to ensure 'set-ntp true' before testing server sync
@@ -63,8 +65,8 @@ if [[ ! -z "$1" && "$1" != 0 ]]; then
   nic=$(ip -br link | grep -v LOOPBACK | awk '{ print $1 }')
   network_config_file="00-installer-config.yaml"
   
-  $(cp 00-installer-config.yaml /etc/netplan/.)
-  $(cp ${network_config_file} /etc/netplan/${network_config_file})
+  #$(cp ~/kube_adm_worker_setup/${network_config_file} /etc/netplan/.)
+  $(cp ~/kube_adm_worker_setup/${network_config_file} /etc/netplan/${network_config_file})
   $(sed -i "s/<nic>/${nic}/g" /etc/netplan/${network_config_file})
   $(sed -i "s/<local_ip>/${local_ip}/g" /etc/netplan/${network_config_file})
   $(netplan apply)
