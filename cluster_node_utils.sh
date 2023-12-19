@@ -114,7 +114,7 @@ while getopts ":hd:ai:w" option; do
       # TODO
       #  SSH first, then run script
       # sudo ./worker_setup.sh $cluster_join_command
-      ssh -t ${dst_host} "sudo ~/'${current_dir}'/worker_setup.sh '${cluster_join_command}'"
+      ssh -t ${dst_host} "cd ~/'${current_dir}'; sudo ./worker_setup.sh '${cluster_join_command}'"
       ;;
     \?) # invalid opt
       echo "Error: Invalid option"
