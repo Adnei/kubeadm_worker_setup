@@ -30,7 +30,7 @@ echo "- - - - - Starting Time Sync (NTP) - - - - -"
 timedatectl set-timezone America/Sao_Paulo
 # FIXME
 #   Needs to ensure fullpath to scripts dir
-cp ~/kube_adm_worker_setup/timesyncd.conf /etc/systemd/.
+cp timesyncd.conf /etc/systemd/.
 # FIXME:
 #   'set-ntp true' might not work
 #   We have to ensure 'set-ntp true' before testing server sync
@@ -66,7 +66,7 @@ if [[ ! -z "$1" && "$1" != 0 ]]; then
   network_config_file="00-installer-config.yaml"
   
   #$(cp ~/kube_adm_worker_setup/${network_config_file} /etc/netplan/.)
-  $(cp ~/kube_adm_worker_setup/${network_config_file} /etc/netplan/${network_config_file})
+  $(cp ${network_config_file} /etc/netplan/${network_config_file})
   $(sed -i "s/<nic>/${nic}/g" /etc/netplan/${network_config_file})
   $(sed -i "s/<local_ip>/${local_ip}/g" /etc/netplan/${network_config_file})
   $(netplan apply)

@@ -91,7 +91,7 @@ while getopts ":hd:ai:w" option; do
       # TODO
       #  SSH first, then run script
       #sudo ./init_setup.sh ${static_ip}
-      ssh -t ${dst_host} "sudo ~/'${current_dir}'/init_setup.sh '${static_ip}'"
+      ssh -t ${dst_host} "cd ~/'${current_dir}'; sudo ./init_setup.sh '${static_ip}'"
       ;;
     w) # worker node add
       if [ -z "${dst_host}" ]; then
