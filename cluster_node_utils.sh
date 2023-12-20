@@ -114,8 +114,23 @@ while getopts ":hd:ai:w" option; do
       # TODO
       #  SSH first, then run script
       # sudo ./worker_setup.sh $cluster_join_command
-      ssh -t ${dst_host} "cd ~/'${current_dir}'; sudo ./worker_setup.sh '${cluster_join_command}'"
+      ssh -t ${dst_host} "cd ~/'${current_dir}'; sudo ./node_setup.sh '${cluster_join_command}'"
+       kubectl label node ${dst_user} node-role.kubernetes.io/worker=worker
+      ## verify worker node
+     ## if # (kubectl get nodes | grep ${dst_user}) | awk '{print $3}' != 'worker'
+        ##  then
+        ##        echo -e "Node added but role not set as worker"
+        ## exit 1; 
       ;;
+   c) # adds a controller and sets up a k8s based on a configuration file "conifig_init.yaml" placed in the same directory
+           cluster_creation_command=$(kubeadm init -f config_init.yaml);
+           ## Info on what's going on (command that is being executed, etc) should be provided in some way
+        sudo ./node_setup.sh "${cluster_creation_command}" ## node setup file to be created
+        ## if # (kubectl get nodes | grep ${dst_user}) | awk '{print $3}' != 'controller'
+        ##  then
+        ##        echo -e "Node added but role not set as controller" This would be a... interesting ... cenario, we're just making sure that everything went well here
+        ## exit 1;
+        ;;
     \?) # invalid opt
       echo "Error: Invalid option"
       exit;;

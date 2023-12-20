@@ -12,7 +12,7 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
-echo "Worker node setup starting..."
+echo "Node setup starting..."
 
 if ! [ $(id -u) = 0 ]; then
    echo -e "Run it as root.\nExiting"
@@ -23,11 +23,11 @@ fi
 if [ -z "$1" ]
   then
     echo "No argument supplied."
-    echo -e "Cluster join command required as argument.\nExiting"
+    echo -e "Cluster join or cluster_creation command required as argument.\nExiting"
     exit 1
 fi
 
-cluster_join_command=$1
+cluster_command=$1
 
 # FIXME:
 #   We should be careful with any repeated MAC address and PRODUCT_UUID in the cluster.
@@ -165,5 +165,5 @@ apt update
 apt install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
 
-echo -e "Joining cluster...\n"
-eval $cluster_join_command
+echo -e "Joining or creating cluster...\n"
+eval $cluster_command
