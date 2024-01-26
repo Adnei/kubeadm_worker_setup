@@ -123,6 +123,12 @@ while getopts ":hd:ai:w" option; do
         ## exit 1; 
       ;;
    c) # adds a controller and sets up a k8s based on a configuration file "conifig_init.yaml" placed in the same directory
+	   if [ -z "${dst_host}" ]; then
+        echo -e "ERROR: arg -d is required for authentication.\n"
+        echo -e "Set arg -d <user>@<host_ip> as the first argument"
+        exit 1
+      fi
+	  ssh ${dst_host}
            cluster_creation_command=$(sudo kubeadm init --pod-network-cidr=192.168.0.0/24);
            ## Info on what's going on (command that is being executed, etc) should be provided in some way
         sudo ./node_setup.sh "${cluster_creation_command}"
