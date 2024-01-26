@@ -128,12 +128,13 @@ while getopts ":hd:ai:w:c" option; do
         echo -e "Set arg -d <user>@<host_ip> as the first argument"
         exit 1
       fi
-	  ssh ${dst_host}
-           cluster_creation_command=$(sudo kubeadm init --pod-network-cidr=192.168.0.0/24);
            ## Info on what's going on (command that is being executed, etc) should be provided in some way
-        sudo ./node_setup.sh "${cluster_creation_command}"
-		kubectl label node ${dst_user} node-role.kubernetes.io/controller=controller
+		ssh ${dst_host} "
+        sudo ./node_setup.sh 'sudo kubeadm init --pod-netword-cidr=198.162.0.0/24'
 		sudo ufw disable # beware of this.
+		mkdir -p $HOME/.kube
+		sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+		sudo chown $(id -u):$(id -g) $HOME/.kube/config
 		#setting up files system for proper mounting
 		cd 
 		cd ..
@@ -152,9 +153,6 @@ while getopts ":hd:ai:w:c" option; do
 		cd
 		cd kubeadm_worker_setup/
 		#setting up calico CNI
-		echo "-------------------------WARNING----------------------------"
-		echo "IT'S EXTREMELY LIKELY YOU WILL NEED TO SETUP THE CALICO CNI AGAIN WITH THE PROPER CLUSTER	CIDR"
-		echo "YOU COULD ALSO CHANGE THE FILE custom-resources.yaml BEFORE RUNNING THE SCRIPT"
 		cd
 		cd kubeadm_worker_setup/
 		cd new_calico/
@@ -191,6 +189,8 @@ while getopts ":hd:ai:w:c" option; do
 		# since helm has been installed, now it is possible to set up scaphandre from its repo
 		git clone https://github.com/hubblo-org/scaphandre
 		cd scaphandre
+		git fetch
+		git switch dev
 		helm install scaphandre helm/scaphandre
 		cd
 		cd kubeadm_worker_setup/
@@ -198,7 +198,7 @@ while getopts ":hd:ai:w:c" option; do
 		cd node_exporter/
 		kubectl create -f daemonset.yaml
 		kubectl create -f node_exporter_service.yaml
-		cd
+		cd"
         ## if # (kubectl get nodes | grep ${dst_user}) | awk '{print $3}' != 'controller'
         ##  then
         ##        echo -e "Node added but role not set as controller" This would be a... interesting ... cenario, we're just making sure that everything went well here
