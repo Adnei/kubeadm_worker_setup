@@ -123,20 +123,37 @@ while getopts ":hd:ai:w" option; do
         ## exit 1; 
       ;;
    c) # adds a controller and sets up a k8s based on a configuration file "conifig_init.yaml" placed in the same directory
-           cluster_creation_command=$(kubeadm init -f config_init.yaml);
+           cluster_creation_command=$(sudo kubeadm init --pod-network-cidr=192.168.0.0/24);
            ## Info on what's going on (command that is being executed, etc) should be provided in some way
         sudo ./node_setup.sh "${cluster_creation_command}"
 		kubectl label node ${dst_user} node-role.kubernetes.io/controller=controller
 		sudo ufw disable # beware of this.
+		#setting up files system for proper mounting
+		cd 
+		cd ..
+		cd ..
+		cd /var/lib/
+		sudo mkdir grafana/
+		cd
+		cd ..
+		cd ..
+		sudo mkdir prometheus/
+		#deploying Persistent Volumes
+		cd
+		cd kubeadm_worker_setup/
+		kubectl apply -f persistent-volume-instantiation-1.yaml
+		kubectl apply -f persistent-volume-instantiation-2.yaml
+		cd
+		cd kubeadm_worker_setup/
 		#setting up calico CNI
 		echo "-------------------------WARNING----------------------------"
 		echo "IT'S EXTREMELY LIKELY YOU WILL NEED TO SETUP THE CALICO CNI AGAIN WITH THE PROPER CLUSTER	CIDR"
-		echo "YOU COULD ALSO CHANGE THE FILE calico_custom_install.yaml BEFORE RUNNING THE SCRIPT"
+		echo "YOU COULD ALSO CHANGE THE FILE custom-resources.yaml BEFORE RUNNING THE SCRIPT"
 		cd
 		cd kubeadm_worker_setup/
-		cd calico_setup/
-		kubectl create -f calico.yaml
-		kubectl create -f calico_custom_install.yaml
+		cd new_calico/
+		kubectl create -f tigera-operator.yaml
+		kubectl create -f custom-resources.yaml
 		kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 		kubectl taint nodes --all node-role.kubernetes.io/master-
 		cd
