@@ -53,7 +53,7 @@ auth_fn(){
 dst_host=""
 current_dir=$(basename "`pwd`")
 
-while getopts ":hd:ai:w" option; do
+while getopts ":hd:ai:w:c" option; do
   case $option in
     h) # help message
       help_fn
