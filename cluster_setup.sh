@@ -1,5 +1,4 @@
-		sudo ./node_setup.sh 
-		sudo kubeadm init --pod-netword-cidr=198.162.0.0/24
+		sudo ./node_setup.sh 'sudo kubeadm init --pod-netword-cidr=198.162.0.0/24'
 		sudo ufw disable # beware of this.
 		mkdir -p $HOME/.kube
 		sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
