@@ -1,46 +1,37 @@
 		sudo ./node_setup.sh 'sudo kubeadm init --pod-network-cidr=198.162.0.0/24'
 		sudo ufw disable # beware of this.
+		#setting up files system for proper mounting
+		cd /var/lib/
+		sudo mkdir grafana/
+		cd /
+		sudo mkdir prometheus/
+		#deploying Persistent Volumes
+		cd
 		mkdir -p $HOME/.kube
 		sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 		sudo chown $(id -u):$(id -g) $HOME/.kube/config
-		#setting up files system for proper mounting
-		cd 
-		cd ..
-		cd ..
-		cd /var/lib/
-		sudo mkdir grafana/
-		cd
-		cd ..
-		cd ..
-		sudo mkdir prometheus/
-		#deploying Persistent Volumes
 		cd
 		cd kubeadm_worker_setup/
 		kubectl apply -f persistent-volume-instantiation-1.yaml
 		kubectl apply -f persistent-volume-instantiation-2.yaml
 		cd
-		cd kubeadm_worker_setup/
+		cd kubeadm_worker_setup/new_calico/
 		#setting up calico CNI
-		cd
-		cd kubeadm_worker_setup/
-		cd new_calico/
 		kubectl create -f tigera-operator.yaml
 		kubectl create -f custom-resources.yaml
 		kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 		kubectl taint nodes --all node-role.kubernetes.io/master-
 		cd
-	cd kubeadm_worker_setup/
+	cd kubeadm_worker_setup/prometheus_test/
 		#setting up prometheus
-		cd prometheus_test/
 		kubectl create namespace monitoring
 		kubectl create -f clusterRole.yaml	# it is inferred that there are the prometheus_test/ folder with the files required for a prometheus setup (for more -> https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/)
 		kubectl create -f prometheus_config-map.yaml 
 		kubectl create -f prometheus-deployment-PV.yaml
 		kubectl create -f prometheus-service.yaml
 		cd
-		cd kubeadm_worker_setup/
-		# setting up grafana
-		cd grafana_tests/ # once again, it is presumed that those files will be provided in some way before running the script (for more -> https://devopscube.com/setup-grafana-kubernetes/)
+		cd kubeadm_worker_setup/grafama_tests/
+		# setting up grafana, once again, it is presumed that those files will be provided in some way before running the script (for more -> https://devopscube.com/setup-grafana-kubernetes/)
 		kubectl create -f grafana-datasource-config.yaml
 		kubectl create -f grafana_dep_PERSIST.yaml
 		kubectl create -f grafana_service.yaml
@@ -61,9 +52,8 @@
 		git switch dev
 		helm install scaphandre helm/scaphandre
 		cd
-		cd kubeadm_worker_setup/
+		cd kubeadm_worker_setup/node_exporter/
 		# setting up the node exporter
-		cd node_exporter/
 		kubectl create -f daemonset.yaml
 		kubectl create -f node_exporter_service.yaml
 		cd
