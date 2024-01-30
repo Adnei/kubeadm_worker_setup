@@ -4,9 +4,7 @@
 		sudo mkdir /var/lib/grafana/
 		sudo mkdir /prometheus/
 		#deploying Persistent Volumes
-		mkdir -p $HOME/.kube
-		sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-		sudo chown $(id -u):$(id -g) $HOME/.kube/config
+		./kubeadm_fix.sh
 		kubectl apply -f persistent-volume-instantiation-1.yaml
 		kubectl apply -f persistent-volume-instantiation-2.yaml
 		cd new_calico/
