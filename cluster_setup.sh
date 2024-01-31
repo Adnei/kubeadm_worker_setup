@@ -1,8 +1,5 @@
-		cd kubeadm-scripts/scripts/
 		./common.sh
 		./master.sh
-		cd ..
-		cd ..
 		sudo ufw disable # beware of this.
 		#setting up files system for proper mounting
 		sudo mkdir /var/lib/grafana/
