@@ -1,26 +1,23 @@
-		sudo ./node_setup.sh 'sudo kubeadm init --pod-network-cidr=198.162.0.0/24'
+		cd kubeadm-scripts/scripts/
+		./common.sh
+		./master.sh
+		cd ..
+		cd ..
 		sudo ufw disable # beware of this.
 		#setting up files system for proper mounting
 		sudo mkdir /var/lib/grafana/
 		sudo mkdir /prometheus/
 		#deploying Persistent Volumes
-		./kubeadm_fix.sh
 		kubectl apply -f persistent-volume-instantiation-1.yaml
 		kubectl apply -f persistent-volume-instantiation-2.yaml
-		cd new_calico/
-		#setting up calico CNI
-		kubectl create -f tigera-operator.yaml
-		kubectl create -f custom-resources.yaml
 		kubectl taint nodes --all node-role.kubernetes.io/control-plane-
-		kubectl taint nodes --all node-role.kubernetes.io/master-
-		cd ..
 		cd prometheus_test/
 		#setting up prometheus
 		kubectl create namespace monitoring
 		kubectl create -f clusterRole.yaml	# it is inferred that there are the prometheus_test/ folder with the files required for a prometheus setup (for more -> https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/)
 		kubectl create -f prometheus_config-map.yaml 
 		kubectl create -f prometheus-deployment-PV.yaml
-		kubectl create -f prometheus-service.yaml
+		kubectl apply -f prometheus-service.yaml
 		cd ..
 		cd grafana_tests/
 		# setting up grafana, once again, it is presumed that those files will be provided in some way before running the script (for more -> https://devopscube.com/setup-grafana-kubernetes/)

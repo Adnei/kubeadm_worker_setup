@@ -1,0 +1,3 @@
+[submodule "kubeadm-script"]
+	path = kubeadm-script
+	url = https://github.com/techiescamp/kubeadm-scripts/

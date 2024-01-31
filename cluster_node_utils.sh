@@ -128,8 +128,9 @@ while getopts ":hd:ai:w:c" option; do
         echo -e "Set arg -d <user>@<host_ip> as the first argument"
         exit 1
       fi
+	  pod_cidr=$OPTARG
            ## Info on what's going on (command that is being executed, etc) should be provided in some way
-		ssh -t ${dst_host} "cd ~/kubeadm_worker_setup; sudo ./cluster_setup.sh" 
+		ssh -t ${dst_host} "cd ~/kubeadm_worker_setup; sudo ./cluster_setup.sh '${pod_cidr}'" 
         ## if # (kubectl get nodes | grep ${dst_user}) | awk '{print $3}' != 'controller'
         ##  then
         ##        echo -e "Node added but role not set as controller" This would be a... interesting ... cenario, we're just making sure that everything went well here
