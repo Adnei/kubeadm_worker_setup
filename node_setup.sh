@@ -122,7 +122,7 @@ echo -e "\n\n"
 #   We consider systemd as the init system
 #   This script should verify the init system and apply the suitable cgroup driver
 #
-sed -i "s|<net-int>|$2|g" 
+sed -i "s|<net-int>|$2|g" common.sh 
 ./common.sh
 apt-mark hold kubelet kubeadm kubectl
 
