@@ -114,7 +114,7 @@ while getopts ":hd:ai:w:c" option; do
       # TODO
       #  SSH first, then run script
       # sudo ./worker_setup.sh $cluster_join_command
-      ssh -t ${dst_host} "cd ~/'${current_dir}'; sudo ./node_setup.sh '${cluster_join_command}'"
+      ssh -t ${dst_host} "cd ~/'${current_dir}'; sudo ./node_setup.sh '${cluster_join_command}' '${network_interface}'"
        kubectl label node ${dst_user} node-role.kubernetes.io/worker=worker
       ## verify worker node
      ## if # (kubectl get nodes | grep ${dst_user}) | awk '{print $3}' != 'worker'
@@ -128,14 +128,23 @@ while getopts ":hd:ai:w:c" option; do
         echo -e "Set arg -d <user>@<host_ip> as the first argument"
         exit 1
       fi
+	   if [ -z "${network_interface}" ]; then
+        echo -e "ERROR: arg -n is required for basic config.\n"echo
+        echo -e "Set arg -n <network-interface> as an argument before the -c tag"
+        exit 1
+      fi
+	  
 	  pod_cidr=$OPTARG
            ## Info on what's going on (command that is being executed, etc) should be provided in some way
-		ssh -t ${dst_host} "cd ~/kubeadm_worker_setup; sudo ./cluster_setup.sh '${pod_cidr}'" 
+		ssh -t ${dst_host} "cd ~/kubeadm_worker_setup; cluster_setup.sh '${pod_cidr}' '${network_interface}'" 
         ## if # (kubectl get nodes | grep ${dst_user}) | awk '{print $3}' != 'controller'
         ##  then
         ##        echo -e "Node added but role not set as controller" This would be a... interesting ... cenario, we're just making sure that everything went well here
         ## exit 1;
         ;;
+	n) # provides the network interface (required for running the initialization script)
+		network_interface=$OPTARG
+		;;
     \?) # invalid opt
       echo "Error: Invalid option"
       exit;;

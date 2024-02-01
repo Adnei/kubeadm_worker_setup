@@ -1,5 +1,8 @@
-		./common.sh
-		./master.sh
+		sed -i "s|<net-int>|$2|g" master.sh
+		sed -i "s|<pod-cidr>|$1|g" master.sh
+		sed -i "s|<net-int>|$2|g" common.sh
+		sed -i "s|<pod-cidr>|$1|g" custom-resources.yaml
+		sudo ./node_setup './master.sh' ' '
 		sudo ufw disable # beware of this.
 		#setting up files system for proper mounting
 		sudo mkdir /var/lib/grafana/

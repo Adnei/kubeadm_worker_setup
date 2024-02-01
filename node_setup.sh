@@ -68,7 +68,7 @@ echo -e "${GREEN}###################### Firewall Rules Updated #################
 # From https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 echo -e "IPv4 Forwarding and IPtables with bridged traffic\n\n"
 
-cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+cat <<EOF | sudo tee /etc/modules-load.d/crio.conf
 overlay
 br_netfilter
 EOF
@@ -122,47 +122,8 @@ echo -e "\n\n"
 #   We consider systemd as the init system
 #   This script should verify the init system and apply the suitable cgroup driver
 #
-
-echo -e "${GREEN}Installing and configuring Containerd\n${NC}"
-echo -e "Proceeding with Containerd v1.7.11. Please, check https://github.com/containerd/containerd/releases for other releases\n"
-
-wget https://github.com/containerd/containerd/releases/download/v1.7.11/containerd-1.7.11-linux-amd64.tar.gz
-sudo tar Cxvf /usr/local containerd-1.7.11-linux-amd64.tar.gz
-
-# FIXME
-#   systemd only!!
-#   Should parameterize versions
-#   Maybe select the latest version as default instead of static versions
-sudo mkdir -p /usr/local/lib/systemd/system
-wget -O /usr/local/lib/systemd/system/containerd.service https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now containerd
-
-echo -e "${GREEN}Containerd installed${NC}\n"
-
-echo -e "Installing runc. Proceeding with version v1.1.10. Please, check https://github.com/opencontainers/runc/releases for other releases\n"
-wget https://github.com/opencontainers/runc/releases/download/v1.1.10/runc.amd64
-sudo install -m 755 runc.amd64 /usr/local/sbin/runc
-
-echo -e "Installing CNI plugins. Proceeding with CNI Plugins v1.4.0. Please, check https://github.com/containernetworking/plugins/releases for other releases\n"
-wget https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz
-sudo mkdir -p /opt/cni/bin
-sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.4.0.tgz
-
-echo -e "Setting cgroup drive to systemd\n"
-sudo mkdir -p /etc/containerd
-containerd config default | sudo tee /etc/containerd/config.toml
-sed -i 's/            SystemdCgroup = false/            SystemdCgroup = true/' /etc/containerd/config.toml
-sudo systemctl restart containerd
-
-echo -e "Installing kubeadm, kubelet and kubectl. Defaults to v1.28\n"
-apt update
-mkdir -m 755 /etc/apt/keyrings
-apt install -y apt-transport-https ca-certificates curl gpg
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-apt update
-apt install -y kubelet kubeadm kubectl
+sed -i "s|<net-int>|$2|g" 
+./common.sh
 apt-mark hold kubelet kubeadm kubectl
 
 echo -e "Joining or creating cluster...\n"
