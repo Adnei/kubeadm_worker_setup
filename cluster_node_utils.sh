@@ -93,6 +93,9 @@ while getopts ":hd:ai:w:c" option; do
       #sudo ./init_setup.sh ${static_ip}
       ssh -t ${dst_host} "cd ~/'${current_dir}'; sudo ./init_setup.sh '${static_ip}'"
       ;;
+	n) # provides the network interface (required for running the initialization script)
+	   network_interface=$OPTARG
+	   ;;
     w) # worker node add
       if [ -z "${dst_host}" ]; then
         echo -e "ERROR: arg -d is required for authentication.\n"
@@ -142,9 +145,6 @@ while getopts ":hd:ai:w:c" option; do
         ##        echo -e "Node added but role not set as controller" This would be a... interesting ... cenario, we're just making sure that everything went well here
         ## exit 1;
         ;;
-	n) # provides the network interface (required for running the initialization script)
-		network_interface=$OPTARG
-		;;
     \?) # invalid opt
       echo "Error: Invalid option"
       exit;;
